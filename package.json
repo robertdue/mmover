@@ -4,11 +4,15 @@
   "description": "",
   "main": "main.js",
   "scripts": {
+    "build": "tsc",
     "start": "node main.js"
   },
   "author": "Robert Burckhardt",
   "license": "ISC",
   "dependencies": {
     "robotjs": "^0.6.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.8.3"
   }
 }

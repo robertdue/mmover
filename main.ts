@@ -3,33 +3,33 @@ import { getMousePos, moveMouse } from 'robotjs';
 const MOVE_MARGIN: number = 10;
 let direction: string = "down";
 
-let mouse: { x: number, y: number } = getMousePos();
-let x = mouse.x;
-let y = mouse.y;
+let initialMousePosition: { x: number, y: number } = getMousePos();
+let x = initialMousePosition.x;
+let y = initialMousePosition.y;
 
 const handle = () => {
-    mouse = getMousePos();
-    console.log(mouse.x + "|" + mouse.y)
+    let currentMousePosition = getMousePos();
+    console.log(currentMousePosition.x + "|" + currentMousePosition.y)
     console.log(x + "|" + y)
 
-    if (mouse.x !== x && mouse.y !== y) {
-        console.log("mouse position did change")
+    if (currentMousePosition.x !== x && currentMousePosition.y !== y) {
+        console.log("currentMousePosition did change")
     } else {
-        console.log("mouse position did not change")
+        console.log("currentMousePosition did not change")
 
         if (direction === "down") {
-            moveMouse(mouse.x + MOVE_MARGIN, mouse.y + MOVE_MARGIN);
+            moveMouse(currentMousePosition.x + MOVE_MARGIN, currentMousePosition.y + MOVE_MARGIN);
             direction = "up";
         } else {
-            moveMouse(mouse.x - MOVE_MARGIN, mouse.y - MOVE_MARGIN);
+            moveMouse(currentMousePosition.x - MOVE_MARGIN, currentMousePosition.y - MOVE_MARGIN);
             direction = "down";
         }
-        console.log("new mouse position: " + x + "|" + y)
+        console.log("new currentMousePosition: " + x + "|" + y)
     }
 
-    mouse = getMousePos();
-    x = mouse.x;
-    y = mouse.y;
+    currentMousePosition = getMousePos();
+    x = currentMousePosition.x;
+    y = currentMousePosition.y;
     console.log("-------------------------------------")
 }
 

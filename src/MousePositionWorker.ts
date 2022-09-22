@@ -12,8 +12,14 @@ export class MousePositionWorker implements Worker {
     private mousePosition: MousePosition;
     private handler: TimerHandler = () => this.handle();
 
-    constructor(@inject(TYPES.MousePosition) mousePosition: MousePosition) {
+    constructor(
+        @inject(TYPES.MousePosition) mousePosition: MousePosition,
+        @inject(TYPES.Timeout) timeout: number,
+        @inject(TYPES.MoveMargin) moveMargin: number,
+    ) {
         this.mousePosition = mousePosition;
+        this.timeout = timeout;
+        this.moveMargin = moveMargin;
     }
 
     public run(): void {

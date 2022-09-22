@@ -3,7 +3,7 @@ import { getMousePos, moveMouse } from 'robotjs';
 const MOVE_MARGIN: number = 10;
 let direction: string = "down";
 
-let initialMousePosition: { x: number, y: number } = getMousePos();
+let initialMousePosition = getMousePos();
 let x = initialMousePosition.x;
 let y = initialMousePosition.y;
 

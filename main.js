@@ -1,36 +1,44 @@
 const robot = require("robotjs");
-
-const MOVE_MARGIN = 10;
-var direction = "down";
+const { watchConfig } = require("./configuration")
 
 var mouse = robot.getMousePos();
+var direction = "down";
 var x = mouse.x;
 var y = mouse.y;
+let interval = undefined
 
-const handle = () => {
-    var mouse = robot.getMousePos();
-    console.log(mouse.x + "|" + mouse.y)
-    console.log(x + "|" + y)
+const createHandler = (configuration) => {
+    return () => {
+        var mouse = robot.getMousePos();
+        console.debug(mouse.x + "|" + mouse.y)
+        console.debug(x + "|" + y)
 
-    if (mouse.x !== x && mouse.y !== y) {
-        console.log("mouse position did change")
-    } else {
-        console.log("mouse position did not change")
-
-        if (direction === "down") {
-            robot.moveMouse(mouse.x + MOVE_MARGIN, mouse.y + MOVE_MARGIN);
-            direction = "up";
+        if (mouse.x !== x && mouse.y !== y) {
+            console.log("mouse position did change")
         } else {
-            robot.moveMouse(mouse.x - MOVE_MARGIN, mouse.y - MOVE_MARGIN);
-            direction = "down";
-        }
-        console.log("new mouse position: " + x + "|" + y)
-    }
+            console.log("mouse position did not change")
 
-    var mouse = robot.getMousePos();
-    x = mouse.x;
-    y = mouse.y;
-    console.log("-------------------------------------")
+            if (direction === "down") {
+                robot.moveMouse(mouse.x + configuration.moveMargin, mouse.y + configuration.moveMargin);
+                direction = "up";
+            } else {
+                robot.moveMouse(mouse.x - configuration.moveMargin, mouse.y - configuration.moveMargin);
+                direction = "down";
+            }
+            console.debug("new mouse position: " + x + "|" + y)
+        }
+
+        var mouse = robot.getMousePos();
+        x = mouse.x;
+        y = mouse.y;
+        console.log("-------------------------------------")
+    }
 }
 
-setInterval(handle, 25000)
+const restart = (configuration) => {
+    console.log("restart mouse mover")
+    clearInterval(interval);
+    interval = setInterval(createHandler(configuration), configuration.interval)
+}
+
+watchConfig(restart)

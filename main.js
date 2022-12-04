@@ -10,35 +10,35 @@ let interval = undefined
 const createHandler = (configuration) => {
     return () => {
         var mouse = robot.getMousePos();
-        console.debug(mouse.x + "|" + mouse.y)
-        console.debug(x + "|" + y)
+        console.debug(`old mouse position: ${x}|${y}, current mouse position: ${mouse.x}|${mouse.y}`)
 
-        if (mouse.x !== x && mouse.y !== y) {
+        if (mouse.x !== x || mouse.y !== y) {
             console.log("mouse position did change")
+            x = mouse.x
+            y = mouse.y
         } else {
             console.log("mouse position did not change")
 
             if (direction === "down") {
-                robot.moveMouse(mouse.x + configuration.moveMargin, mouse.y + configuration.moveMargin);
+                x = mouse.x + configuration.moveMargin
+                y = mouse.y + configuration.moveMargin
                 direction = "up";
             } else {
-                robot.moveMouse(mouse.x - configuration.moveMargin, mouse.y - configuration.moveMargin);
+                x = mouse.x - configuration.moveMargin
+                y = mouse.y - configuration.moveMargin
                 direction = "down";
             }
-            console.debug("new mouse position: " + x + "|" + y)
+            robot.moveMouse(x, y);
+            console.debug(`new mouse position: ${x}|${y}`)
         }
-
-        var mouse = robot.getMousePos();
-        x = mouse.x;
-        y = mouse.y;
-        console.log("-------------------------------------")
     }
 }
 
 const restart = (configuration) => {
-    console.log("restart mouse mover")
-    clearInterval(interval);
-    interval = setInterval(createHandler(configuration), configuration.interval)
+    if (interval)
+        clearInterval(interval);
+    if (configuration.active)
+        interval = setInterval(createHandler(configuration), configuration.interval)
 }
 
 watchConfig(restart)

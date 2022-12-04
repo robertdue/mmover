@@ -3,7 +3,8 @@ const fs = require("fs")
 let configFile = "./config.json"
 let defaultConfiguration = {
     interval: 25000,
-    moveMargin: 10
+    moveMargin: 10,
+    active: true
 }
 
 let configuration = defaultConfiguration

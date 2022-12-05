@@ -1,3 +1,4 @@
+import chalk from "chalk";
 import { readFileSync, watch } from "fs";
 
 export interface Configuration {
@@ -25,14 +26,18 @@ const reloadConfig = (callback: ConfigurationCallbackFunction) => {
       ...defaultConfiguration,
       ...JSON.parse(readFileSync(configFile, "utf8")),
     };
-    console.log("reading configuration successful");
+    console.log(chalk.green("[CONFIG] reading configuration successful"));
   } catch (e) {
     configuration = defaultConfiguration;
     console.warn(
-      "reading configuration failed - fallback to default configuration"
+      chalk.green(
+        "[CONFIG] reading configuration failed - fallback to default configuration"
+      )
     );
   }
-  console.debug("configuration: " + JSON.stringify(configuration));
+  console.debug(
+    chalk.green("[CONFIG] configuration: " + JSON.stringify(configuration))
+  );
   callback(configuration);
 };
 

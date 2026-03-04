@@ -5,7 +5,7 @@
   "main": "main.js",
   "scripts": {
     "build": "rm -rf dist && tsc",
-    "start": "node main.js"
+    "start": "node dist/main.js"
   },
   "packageManager": "pnpm@10.29.3",
   "author": "Robert Burckhardt",

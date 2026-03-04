@@ -1,6 +1,6 @@
 import { MousePosition } from "./MousePosition";
 
 export interface IMouseController {
-    getPosition(): MousePosition;
-    moveTo(x: number, y: number): void;
+    getPosition(): Promise<MousePosition>;
+    moveTo(x: number, y: number): Promise<void>;
 }

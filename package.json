@@ -7,6 +7,7 @@
     "build": "rm -rf dist && tsc",
     "start": "node main.js"
   },
+  "packageManager": "pnpm@10.29.3",
   "author": "Robert Burckhardt",
   "license": "ISC",
   "dependencies": {

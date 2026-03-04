@@ -1,16 +1,19 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
+    "allowJs": true,
+    "esModuleInterop": true,
+    "target": "ES2022",
     "lib": [
-      "es6",
-      "dom"
+      "ES2022",
+      "DOM"
     ],
-    "types": ["reflect-metadata", "node"],
-    "module": "commonjs",
+    "types": ["node"],
+    "module": "ES2022",
     "moduleResolution": "Node",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "declaration": true,
+    "skipLibCheck": true,
     "outDir": "./dist",
     "strict": true,
     "sourceMap": true

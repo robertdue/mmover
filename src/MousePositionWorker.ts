@@ -1,53 +1,57 @@
-import { Worker } from "./Worker";
-import { getMousePos, moveMouse } from "robotjs";
 import { inject, injectable } from "inversify";
+import { Worker } from "./Worker";
+import { IMouseController } from "./IMouseController";
+import { IMoveStrategy } from "./IMoveStrategy";
 import { MousePosition } from "./MousePosition";
 import { TYPES } from "./Types";
 
 @injectable()
 export class MousePositionWorker implements Worker {
-    private timeout: number = 25000;
-    private moveMargin: number = 10;
-    private direction: string = 'down';
-    private mousePosition: MousePosition;
-    private handler: TimerHandler = () => this.handle();
+    private lastMousePosition: MousePosition;
+    private intervalHandle: NodeJS.Timer | null = null;
 
     constructor(
-        @inject(TYPES.MousePosition) mousePosition: MousePosition,
-        @inject(TYPES.Timeout) timeout: number,
-        @inject(TYPES.MoveMargin) moveMargin: number,
+        @inject(TYPES.MouseController) private readonly mouseController: IMouseController,
+        @inject(TYPES.MoveStrategy) private readonly moveStrategy: IMoveStrategy,
+        @inject(TYPES.Timeout) private readonly timeout: number,
+        @inject(TYPES.MoveMargin) private readonly moveMargin: number,
     ) {
-        this.mousePosition = mousePosition;
-        this.timeout = timeout;
-        this.moveMargin = moveMargin;
+        this.lastMousePosition = this.mouseController.getPosition();
     }
 
     public run(): void {
-        setInterval(this.handler, this.timeout);
+        this.intervalHandle = setInterval(() => this.checkAndMoveIfIdle(), this.timeout);
     }
 
-    private handle(): void {
-        let currentMousePosition: MousePosition = getMousePos();
-        console.log(currentMousePosition.x + "|" + currentMousePosition.y)
-        console.log(this.mousePosition.x + "|" + this.mousePosition.y)
-
-        if (currentMousePosition.x !== this.mousePosition.x && currentMousePosition.y !== this.mousePosition.y) {
-            console.log("currentMousePosition did change")
-        } else {
-            console.log("currentMousePosition did not change")
-
-            if (this.direction === "down") {
-                moveMouse(currentMousePosition.x + this.moveMargin, currentMousePosition.y + this.moveMargin);
-                this.direction = "up";
-            } else {
-                moveMouse(currentMousePosition.x - this.moveMargin, currentMousePosition.y - this.moveMargin);
-                this.direction = "down";
-            }
-            console.log("new currentMousePosition: " + this.mousePosition.x + "|" + this.mousePosition.y)
+    public stop(): void {
+        if (this.intervalHandle) {
+            clearInterval(this.intervalHandle);
+            this.intervalHandle = null;
         }
+    }
 
-        currentMousePosition = getMousePos();
-        this.mousePosition = currentMousePosition;
-        console.log("-------------------------------------")
+    private checkAndMoveIfIdle(): void {
+        try {
+            const currentPosition = this.mouseController.getPosition();
+            console.info(`Current: ${currentPosition.x}|${currentPosition.y}, Last: ${this.lastMousePosition.x}|${this.lastMousePosition.y}`);
+
+            if (this.hasMouseMoved(currentPosition)) {
+                console.info("Mouse position did change – no action needed.");
+            } else {
+                console.info("Mouse position did not change – moving mouse.");
+                const nextPosition = this.moveStrategy.getNextPosition(currentPosition, this.moveMargin);
+                this.mouseController.moveTo(nextPosition.x, nextPosition.y);
+                console.info(`New position: ${nextPosition.x}|${nextPosition.y}`);
+            }
+
+            this.lastMousePosition = this.mouseController.getPosition();
+        } catch (error) {
+            console.error("Error during mouse position check:", error);
+        }
+        console.info("-------------------------------------");
+    }
+
+    private hasMouseMoved(current: MousePosition): boolean {
+        return current.x !== this.lastMousePosition.x || current.y !== this.lastMousePosition.y;
     }
 }

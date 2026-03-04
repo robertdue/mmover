@@ -1,16 +1,20 @@
 import "reflect-metadata";
 import { Container } from "inversify";
-import { getMousePos } from "robotjs";
 import { config } from 'dotenv';
 import { Worker } from "./Worker";
 import { TYPES } from "./Types";
 import { MousePositionWorker } from "./MousePositionWorker";
-import { MousePosition } from "./MousePosition";
+import { IMouseController } from "./IMouseController";
+import { RobotJsMouseController } from "./RobotJsMouseController";
+import { IMoveStrategy } from "./IMoveStrategy";
+import { ToggleMoveStrategy } from "./ToggleMoveStrategy";
 
 config();
+
 const container = new Container();
-container.bind<Worker>(TYPES.Worker).to(MousePositionWorker)
-container.bind<MousePosition>(TYPES.MousePosition).toConstantValue(getMousePos());
+container.bind<Worker>(TYPES.Worker).to(MousePositionWorker);
+container.bind<IMouseController>(TYPES.MouseController).to(RobotJsMouseController);
+container.bind<IMoveStrategy>(TYPES.MoveStrategy).to(ToggleMoveStrategy);
 container.bind<number>(TYPES.Timeout).toConstantValue(Number.parseInt(process.env.TIMEOUT || '3000'));
 container.bind<number>(TYPES.MoveMargin).toConstantValue(Number.parseInt(process.env.MOVE_MARGIN || '3'));
 
